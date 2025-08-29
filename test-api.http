@@ -1,0 +1,31 @@
+### Restaurant Management API Tests
+
+### Get all restaurants
+GET http://localhost:8000/api/restaurants
+
+### Get restaurants with search
+GET http://localhost:8000/api/restaurants?search=Tandoori
+
+### Get restaurants with filters
+GET http://localhost:8000/api/restaurants?cuisine=Japanese&location=Mumbai
+
+### Get restaurants with sorting
+GET http://localhost:8000/api/restaurants?sort_by=name&sort_order=desc
+
+### Get specific restaurant
+GET http://localhost:8000/api/restaurants/101
+
+### Get order trends for restaurant
+GET http://localhost:8000/api/restaurants/101/trends?start_date=2025-06-23&end_date=2025-06-30
+
+### Get top restaurants by revenue
+GET http://localhost:8000/api/analytics/top-restaurants?start_date=2025-06-23&end_date=2025-06-30
+
+### Get filtered orders
+GET http://localhost:8000/api/analytics/orders?restaurant_id=101&start_date=2025-06-23&end_date=2025-06-30
+
+### Get orders with amount filter
+GET http://localhost:8000/api/analytics/orders?min_amount=500&max_amount=1000
+
+### Get orders with hour filter
+GET http://localhost:8000/api/analytics/orders?start_hour=15&end_hour=18
