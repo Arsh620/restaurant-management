@@ -22,9 +22,7 @@ class AnalyticsController extends Controller
             ->selectRaw('DATE(order_time) as date, 
                         COUNT(*) as daily_orders,
                         SUM(order_amount) as daily_revenue,
-                        AVG(order_amount) as avg_order_value,
-                        HOUR(order_time) as hour,
-                        COUNT(*) as hour_count')
+                        AVG(order_amount) as avg_order_value')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -32,7 +30,7 @@ class AnalyticsController extends Controller
         $peakHours = Order::where('restaurant_id', $restaurantId)
             ->whereBetween('order_time', [$startDate, $endDate])
             ->selectRaw('DATE(order_time) as date, 
-                        HOUR(order_time) as hour,
+                        EXTRACT(HOUR FROM order_time) as hour,
                         COUNT(*) as order_count')
             ->groupBy('date', 'hour')
             ->get()
@@ -89,7 +87,7 @@ class AnalyticsController extends Controller
         }
 
         if ($request->has('start_hour') && $request->has('end_hour')) {
-            $query->whereRaw('HOUR(order_time) BETWEEN ? AND ?', [$request->start_hour, $request->end_hour]);
+            $query->whereRaw('EXTRACT(HOUR FROM order_time) BETWEEN ? AND ?', [$request->start_hour, $request->end_hour]);
         }
 
         $orders = $query->paginate($request->get('per_page', 15));

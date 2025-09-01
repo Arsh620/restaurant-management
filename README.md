@@ -58,10 +58,32 @@ A Laravel-based backend API for restaurant analytics dashboard that provides ord
 
 ## API Endpoints
 
-### Restaurants
+### Authentication
+
+**POST /api/register**
+- Register a new user
+- Body: `name`, `email`, `password`
+- Returns: User data and Bearer token
+
+**POST /api/login**
+- Login user
+- Body: `email`, `password`
+- Returns: User data and Bearer token
+
+**POST /api/logout** (Protected)
+- Logout current user
+- Requires: Bearer token
+- Returns: Success message
+
+**GET /api/user** (Protected)
+- Get current user data
+- Requires: Bearer token
+
+### Restaurants (Protected)
 
 **GET /api/restaurants**
 - List restaurants with pagination
+- Requires: Bearer token
 - Query parameters:
   - `search` - Search in name, location, cuisine
   - `cuisine` - Filter by cuisine type
@@ -72,11 +94,13 @@ A Laravel-based backend API for restaurant analytics dashboard that provides ord
 
 **GET /api/restaurants/{id}**
 - Get restaurant details with orders
+- Requires: Bearer token
 
-### Analytics
+### Analytics (Protected)
 
 **GET /api/restaurants/{id}/trends**
 - Get order trends for specific restaurant
+- Requires: Bearer token
 - Query parameters:
   - `start_date` - Start date (Y-m-d)
   - `end_date` - End date (Y-m-d)
@@ -84,12 +108,14 @@ A Laravel-based backend API for restaurant analytics dashboard that provides ord
 
 **GET /api/analytics/top-restaurants**
 - Get top 3 restaurants by revenue
+- Requires: Bearer token
 - Query parameters:
   - `start_date` - Start date (Y-m-d)
   - `end_date` - End date (Y-m-d)
 
 **GET /api/analytics/orders**
 - Get filtered orders with pagination
+- Requires: Bearer token
 - Query parameters:
   - `restaurant_id` - Filter by restaurant
   - `start_date` - Start date
@@ -140,14 +166,22 @@ CORS is configured to allow frontend integration. Update `config/cors.php` if ne
 Test the API endpoints using tools like Postman or curl:
 
 ```bash
-# Get all restaurants
-curl http://localhost:8000/api/restaurants
+# Register user
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
 
-# Get restaurant trends
-curl "http://localhost:8000/api/restaurants/101/trends?start_date=2025-06-23&end_date=2025-06-30"
+# Login user
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"john@example.com","password":"password123"}'
 
-# Get top restaurants
-curl "http://localhost:8000/api/analytics/top-restaurants?start_date=2025-06-23&end_date=2025-06-30"
+# Get restaurants (with token)
+curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8000/api/restaurants
+
+# Get restaurant trends (with token)
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  "http://localhost:8000/api/restaurants/101/trends?start_date=2025-06-23&end_date=2025-06-30"
 ```
 
 ## Frontend Integration
@@ -157,6 +191,8 @@ This backend is designed to work with Next.js/React frontend. All endpoints retu
 ## Assignment Completion
 
 ✅ Laravel/PHP Backend  
+✅ User registration and login with token authentication  
+✅ Protected API routes with Bearer token  
 ✅ Restaurant listing with search/sort/filter  
 ✅ Order trends analytics  
 ✅ Revenue and average order value calculation  

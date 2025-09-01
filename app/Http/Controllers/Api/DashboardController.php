@@ -35,12 +35,24 @@ class DashboardController extends Controller
     
     private function calculateGrowthRate($startDate, $endDate)
     {
+        $currentStart = \Carbon\Carbon::parse($startDate);
+        $currentEnd = \Carbon\Carbon::parse($endDate);
+        $daysDiff = $currentStart->diffInDays($currentEnd) + 1;
+        
         $currentRevenue = Order::whereBetween('order_time', [$startDate, $endDate])->sum('order_amount');
+        
+        $previousStart = $currentStart->copy()->subDays($daysDiff);
+        $previousEnd = $currentEnd->copy()->subDays($daysDiff);
+        
         $previousRevenue = Order::whereBetween('order_time', [
-            now()->parse($startDate)->subDays(7)->format('Y-m-d'),
-            now()->parse($endDate)->subDays(7)->format('Y-m-d')
+            $previousStart->format('Y-m-d'),
+            $previousEnd->format('Y-m-d')
         ])->sum('order_amount');
         
-        return $previousRevenue > 0 ? (($currentRevenue - $previousRevenue) / $previousRevenue) * 100 : 0;
+        if ($previousRevenue == 0) {
+            return $currentRevenue > 0 ? 100 : 0;
+        }
+        
+        return round((($currentRevenue - $previousRevenue) / $previousRevenue) * 100, 2);
     }
 }
